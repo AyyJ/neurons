@@ -22,14 +22,6 @@ subscribe("/pause",function(){
 	}
 	_updatePauseUI();
 });
-play.onclick = function(){
-	if(Interactive.PLAYING){
-		Interactive.pause();
-	}else{
-		Interactive.play();
-	}
-	_updatePauseUI();
-};
 
 // Page Visibility
 subscribe("/update", function(){
@@ -39,21 +31,6 @@ subscribe("/update", function(){
 	}
 });
 
-var resume_screen = document.getElementById("resume");
-var resume_button = document.getElementById("resume_button");
-resume_screen.onclick = function(){
-	Interactive.play();
-	_updatePauseUI();
-};
-var _updatePauseUI = function(){
-	if(Interactive.PLAYING){
-		play.setAttribute("playing","true");
-		resume.style.display = "none";
-	}else{
-		play.setAttribute("playing","false");
-		resume.style.display = "block";
-	}
-};
 
 //////////////////////
 /// VOLUME CONTROL ///
@@ -104,70 +81,5 @@ volumeSlider.oninput = function(){
 };
 
 
-//////////////////////
-//// CAPTIONS, YO ////
-//////////////////////
-
-// Icon
-var captionsIcon = document.getElementById("control_captions");
-var _lastLanguage = "en";
-captionsIcon.onclick = function(){
-	if(CAPTION_LANGUAGE==""){
-		CAPTION_LANGUAGE = _lastLanguage;
-	}else{
-		_lastLanguage = CAPTION_LANGUAGE;
-		CAPTION_LANGUAGE = "";
-	}
-	_updateCaptionsUI();
-};
-var _updateCaptionsUI = function(){
-	captionsIcon.style.backgroundPosition = (CAPTION_LANGUAGE=="") ? "47px 0px" : "0px 0px";
-	captionsSelect.value = CAPTION_LANGUAGE;
-};
-
-// The list
-var captionsSelect = document.getElementById("control_captions_select");
-
-// Populate List. Also, the default option.
-var languageList = [{
-	value: "",
-	label: "None"
-}];
-for(var languageID in window.Captions){
-	var language = Captions[languageID];
-	languageList.push({
-		value: languageID,
-		label: language.label
-	});
-}
-var html = "";
-for(var i=0;i<languageList.length;i++){
-	var language = languageList[i];
-	html += '<option '+(language.value==CAPTION_LANGUAGE ? 'selected ' : '')+
-					'value="'+language.value+'">'+
-					language.label+
-					'</option>';
-}
-captionsSelect.innerHTML = html;
-
-// When the language is changed...
-captionsSelect.onchange = function(){
-	CAPTION_LANGUAGE = captionsSelect.value;
-	_updateCaptionsUI();
-};
-
-// IF THERE IS A ?lang=es var, set to THAT.
-function getParameterByName(name){
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(window.top.location.search); // TOP.
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-var lang = getParameterByName("lang");
-if(lang && window.Captions[lang]){
-	captionsSelect.value = lang;
-	CAPTION_LANGUAGE = captionsSelect.value;
-	_updateCaptionsUI();
-}
 
 })();
